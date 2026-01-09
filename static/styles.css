@@ -1,0 +1,19 @@
+:root{
+  --bg: #fbfaf7;
+  --ink: #121212;
+  --muted: #6c757d;
+  --card: #ffffff;
+  --border: rgba(18,18,18,.08);
+}
+body{font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; color:var(--ink); background:var(--bg);}
+.bg-soft{background:var(--bg);}
+.brand{font-family:"Playfair Display",serif; letter-spacing:.2px;}
+.brand-sub{font-family:Inter,sans-serif; font-weight:400; color:var(--muted); font-size:.85rem; margin-left:.35rem;}
+.hero{background:radial-gradient(1000px 400px at 15% -10%, rgba(0,0,0,.06), transparent 60%),radial-gradient(900px 420px at 110% 0%, rgba(0,0,0,.05), transparent 60%),linear-gradient(to bottom,#fff,var(--bg)); border-bottom:1px solid var(--border);}
+.hero-title{font-family:"Playfair Display",serif;}
+.filter-card{border-radius:16px;}
+.accordion-item{border:1px solid var(--border); border-radius:16px !important; overflow:hidden; background:var(--card); margin-bottom:12px;}
+.accordion-button{padding:16px 18px; background:var(--card);}
+.category-title{font-family:"Playfair Display",serif; font-weight:600;}
+.wine-table th, .wine-table td{padding:12px 14px;}
+.pill{display:inline-block; padding:.15rem .5rem; border:1px solid var(--border); border-radius:999px; font-size:.85rem; color:#222; background:rgba(0,0,0,.02);}

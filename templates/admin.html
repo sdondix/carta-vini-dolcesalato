@@ -1,0 +1,108 @@
+<!doctype html><html lang="it"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ app_name }} – Admin</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="{{ url_for('static', filename='styles.css') }}" rel="stylesheet"></head>
+<body>
+<nav class="navbar navbar-expand-lg border-bottom bg-white sticky-top"><div class="container">
+<a class="navbar-brand brand" href="/">{{ app_name }} <span class="brand-sub">Admin</span></a>
+<div class="ms-auto d-flex gap-2">
+<a class="btn btn-sm btn-outline-secondary" href="{{ url_for('index') }}">Vedi sito</a>
+<a class="btn btn-sm btn-outline-dark" href="{{ url_for('logout') }}">Logout</a>
+</div></div></nav>
+
+<div class="container py-4">
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}{% for category, msg in messages %}
+    <div class="alert alert-{{ category }} py-2">{{ msg }}</div>
+  {% endfor %}{% endif %}
+{% endwith %}
+
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card shadow-sm border-0"><div class="card-body">
+      <h2 class="h6">Import (una volta sola)</h2>
+      <form method="post" action="{{ url_for('import_from_sheets') }}">
+        <button class="btn btn-outline-secondary w-100" type="submit" {% if not has_sheets %}disabled{% endif %}>Importa da Google Sheets</button>
+      </form>
+      <p class="small text-muted mt-2 mb-0">Il bottone è attivo solo se hai impostato <code>SHEETS_CSV_URL</code> su Render.</p>
+
+      <hr class="my-3">
+      <h2 class="h6">Aggiungi vino</h2>
+      <form method="post" action="{{ url_for('admin_add') }}">
+        <input name="categoria" class="form-control mb-2" placeholder="Categoria">
+        <input name="nome_vino" class="form-control mb-2" placeholder="Nome vino *" required>
+        <input name="produttore" class="form-control mb-2" placeholder="Produttore">
+        <div class="row g-2">
+          <div class="col-6"><input name="annata" class="form-control mb-2" placeholder="Annata"></div>
+          <div class="col-6"><input name="prezzo_eur" class="form-control mb-2" placeholder="Prezzo €"></div>
+        </div>
+        <div class="row g-2">
+          <div class="col-6"><input name="colore" class="form-control mb-2" placeholder="Colore"></div>
+          <div class="col-6"><input name="tipologia" class="form-control mb-2" placeholder="Tipologia"></div>
+        </div>
+        <input name="denom" class="form-control mb-2" placeholder="Denom.">
+        <input name="regione_area" class="form-control mb-3" placeholder="Regione/Area">
+        <button class="btn btn-dark w-100" type="submit">Aggiungi</button>
+      </form>
+    </div></div>
+  </div>
+
+  <div class="col-lg-8">
+    <div class="card shadow-sm border-0"><div class="card-body">
+      <form class="row g-2 align-items-end mb-3" method="get" action="{{ url_for('admin') }}">
+        <div class="col-12 col-md-8">
+          <label class="form-label small text-muted mb-1">Cerca</label>
+          <input name="q" value="{{ q|e }}" class="form-control" placeholder="Nome / Produttore / Categoria / Colore / Tipologia / Area">
+        </div>
+        <div class="col-12 col-md-4 d-flex gap-2">
+          <button class="btn btn-outline-dark w-100" type="submit">Cerca</button>
+          <a class="btn btn-outline-secondary w-100" href="{{ url_for('admin') }}">Reset</a>
+        </div>
+      </form>
+
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light"><tr>
+            <th style="width:90px">Attivo</th>
+            <th>Categoria</th>
+            <th>Vino</th>
+            <th class="d-none d-md-table-cell">Produttore</th>
+            <th class="d-none d-lg-table-cell">Colore</th>
+            <th class="d-none d-lg-table-cell">Tipologia</th>
+            <th class="d-none d-lg-table-cell">Regione/Area</th>
+            <th class="text-end">€</th>
+            <th style="width:90px"></th>
+          </tr></thead>
+          <tbody>
+          {% for w in vini %}
+            <tr>
+              <td><div class="form-check form-switch m-0">
+                <input class="form-check-input attivo-toggle" type="checkbox" data-id="{{ w.id }}" {% if w.attivo %}checked{% endif %}>
+              </div></td>
+              <td class="text-muted small">{{ w.categoria }}</td>
+              <td class="fw-semibold">{{ w.nome_vino }}</td>
+              <td class="d-none d-md-table-cell">{{ w.produttore }}</td>
+              <td class="d-none d-lg-table-cell">{{ w.colore }}</td>
+              <td class="d-none d-lg-table-cell">{{ w.tipologia }}</td>
+              <td class="d-none d-lg-table-cell">{{ w.regione_area }}</td>
+              <td class="text-end">{% if w.prezzo_eur is not none %}{{ "%.0f"|format(w.prezzo_eur) }}{% endif %}</td>
+              <td class="text-end">
+                <form method="post" action="{{ url_for('admin_delete', wine_id=w.id) }}" onsubmit="return confirm('Eliminare questo vino?');">
+                  <button class="btn btn-sm btn-outline-danger" type="submit">Elimina</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div></div>
+  </div>
+</div>
+</div>
+
+<script src="{{ url_for('static', filename='admin.js') }}"></script>
+</body></html>
